@@ -1,0 +1,64 @@
+
+{% extends "layout.html" %}
+{% block content %}
+
+<h1> **** </h1>
+
+<div id='container' style='height:100%;width:100%;overflow-x:scroll'>
+
+    <table class="ui celled striped table">
+    <thead>
+        <tr>
+
+          <th class="two wide column" >Ticker</th>
+          <th class="eight wide column" >Title</th>
+          <th class="two wide column" >Date</th>
+          <th class="four wide column" >URL</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+      {% for m in mention %}
+      <tr>
+          <td class="two wide column" ><a href="api/stock/adj/{{m.ticker}}"> {{m.ticker}}</a></td>
+<!--            <td>{{m.ticker}}</td>-->
+              <td class="eight wide column">{{m.message}}</td>
+            <td class="two wide column">{{m.datetime}}</td>
+            <td class="four wide column"><a href="{{m.url}}">{{m.url}}</a></td>
+      </tr>
+      {% endfor %}
+
+
+
+    </tbody>
+
+    </table>
+
+</div>
+{% endblock %}
+
+
+Templates/Reddit_plot.html
+
+
+{% extends "layout.html" %}
+{% block content %}
+
+<h1> **** </h1>
+
+
+          <div >
+              <div style="width: 100%;" >
+            <iframe
+              noresize='noresize'
+              style='position: relative; background: transparent; width: 100%; height:100%;'
+              src={{ url }}
+              frameborder="0">
+            </iframe>
+              </div>
+          </div>
+
+
+{% endblock %}
+

@@ -3,11 +3,13 @@ import pathlib
 import pandas as pd
 import pandas_market_calendars as mcal
 import pytz
-from app.core.config import ASSET_DIR
-# we're appending the app directory to our path here so that we can import config easily
-sys.path.append(str(pathlib.Path(__file__).resolve().parents[2]))
+
 
 from app.core.config import ASSET_DIR
+from sqlalchemy import inspect
+
+
+
 
 import time
 
@@ -176,7 +178,7 @@ def processstock(filename,paucity_threshold=0.00, data_type="daily"):
 
 
 
-async def get_file_list(folder_name):
+def get_file_list(folder_name):
 
     """"
 
@@ -202,10 +204,17 @@ async def get_file_list(folder_name):
     """
 
     # directory path
-        dir_path=ASSET_DIR + '/' + dir_name
-        files=os.listdir(dir_path)
+    dir_path=ASSET_DIR  + folder_name
+    
+    files=os.listdir(dir_path)
 
-        return files
+    return files
+
+
+
+
+def object_as_dict(obj):
+    return {c.key: getattr(obj, c.key) for c in inspect(obj).mapper.column_attrs}
 
 
 

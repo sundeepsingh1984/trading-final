@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: bb3be439f06e
+Revision ID: 2ff377f71f20
 Revises: 
-Create Date: 2021-04-21 21:18:13.027369
+Create Date: 2021-04-29 18:45:19.317826
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = 'bb3be439f06e'
+revision = '2ff377f71f20'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -255,25 +255,6 @@ def upgrade():
     sa.UniqueConstraint('vendor_id', 'crypto_id', 'datetime')
     )
     op.create_index(op.f('ix_crypto_prices_hourly_unadj_id'), 'crypto_prices_hourly_unadj', ['id'], unique=False)
-    op.create_table('crypto_prices_min',
-    sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
-    sa.Column('unique_id', sa.String(), nullable=True),
-    sa.Column('vendor_id', sa.Integer(), nullable=True),
-    sa.Column('indices_id', sa.String(), nullable=True),
-    sa.Column('datetime', sa.TIMESTAMP(), nullable=False),
-    sa.Column('open', sa.Float(), nullable=False),
-    sa.Column('high', sa.Float(), nullable=False),
-    sa.Column('low', sa.Float(), nullable=False),
-    sa.Column('close', sa.Float(), nullable=False),
-    sa.Column('volume', sa.BigInteger(), nullable=False),
-    sa.Column('vw_avg_price', sa.Float(), nullable=True),
-    sa.ForeignKeyConstraint(['indices_id'], ['indices.ticker'], ),
-    sa.ForeignKeyConstraint(['unique_id'], ['symbol.unique_id'], ),
-    sa.ForeignKeyConstraint(['vendor_id'], ['vendor.id'], ),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('vendor_id', 'indices_id', 'datetime')
-    )
-    op.create_index(op.f('ix_crypto_prices_min_id'), 'crypto_prices_min', ['id'], unique=False)
     op.create_table('crypto_prices_min_adj',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('unique_id', sa.String(), nullable=True),
@@ -305,13 +286,135 @@ def upgrade():
     sa.Column('close', sa.Float(), nullable=False),
     sa.Column('volume', sa.BigInteger(), nullable=False),
     sa.Column('vw_avg_price', sa.Float(), nullable=True),
-    sa.ForeignKeyConstraint(['crypto_id'], ['forex.ticker'], ),
+    sa.ForeignKeyConstraint(['crypto_id'], ['crypto.ticker'], ),
     sa.ForeignKeyConstraint(['unique_id'], ['symbol.unique_id'], ),
     sa.ForeignKeyConstraint(['vendor_id'], ['vendor.id'], ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('vendor_id', 'crypto_id', 'datetime')
     )
     op.create_index(op.f('ix_crypto_prices_min_unadj_id'), 'crypto_prices_min_unadj', ['id'], unique=False)
+    op.create_table('financials',
+    sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
+    sa.Column('vendor_id', sa.Integer(), nullable=True),
+    sa.Column('company_id', sa.String(), nullable=True),
+    sa.Column('symbol_id', sa.String(), nullable=True),
+    sa.Column('period', sa.TIMESTAMP(), nullable=False),
+    sa.Column('calender_date', sa.Date(), nullable=False),
+    sa.Column('report_period', sa.Date(), nullable=False),
+    sa.Column('updated', sa.Date(), nullable=True),
+    sa.Column('accumulatedOtherComprehensiveIncome', sa.BigInteger(), nullable=False),
+    sa.Column('assets', sa.BigInteger(), nullable=False),
+    sa.Column('assetsAverage', sa.BigInteger(), nullable=True),
+    sa.Column('assetTurnover', sa.BigInteger(), nullable=True),
+    sa.Column('assetsNonCurrent', sa.BigInteger(), nullable=True),
+    sa.Column('assetsCurrent', sa.BigInteger(), nullable=True),
+    sa.Column('bookValuePerShare', sa.Float(), nullable=True),
+    sa.Column('capitalExpenditure', sa.BigInteger(), nullable=True),
+    sa.Column('cashAndEquivalents', sa.BigInteger(), nullable=True),
+    sa.Column('cashAndEquivalentsUSD', sa.BigInteger(), nullable=True),
+    sa.Column('costOfRevenue', sa.BigInteger(), nullable=True),
+    sa.Column('consolidatedIncome', sa.BigInteger(), nullable=True),
+    sa.Column('currentRatio', sa.Float(), nullable=True),
+    sa.Column('debtToEquityRatio', sa.Float(), nullable=True),
+    sa.Column('debt', sa.BigInteger(), nullable=True),
+    sa.Column('debtCurrent', sa.BigInteger(), nullable=True),
+    sa.Column('debtNonCurrent', sa.BigInteger(), nullable=True),
+    sa.Column('debtUSD', sa.BigInteger(), nullable=True),
+    sa.Column('deferredRevenue', sa.BigInteger(), nullable=True),
+    sa.Column('depreciationAmortizationAndAccretion', sa.BigInteger(), nullable=True),
+    sa.Column('deposits', sa.BigInteger(), nullable=True),
+    sa.Column('dividendYield', sa.BigInteger(), nullable=True),
+    sa.Column('dividendsPerBasicCommonShare', sa.BigInteger(), nullable=True),
+    sa.Column('earningBeforeInterestTaxes', sa.BigInteger(), nullable=True),
+    sa.Column('earningsBeforeInterestTaxesDepreciationAmortization', sa.BigInteger(), nullable=True),
+    sa.Column('EBITDAMargin', sa.BigInteger(), nullable=True),
+    sa.Column('earningsBeforeInterestTaxesDepreciationAmortizationUSD', sa.BigInteger(), nullable=True),
+    sa.Column('earningBeforeInterestTaxesUSD', sa.BigInteger(), nullable=True),
+    sa.Column('earningsBeforeTax', sa.BigInteger(), nullable=True),
+    sa.Column('earningsPerBasicShare', sa.Float(), nullable=True),
+    sa.Column('earningsPerDilutedShare', sa.Float(), nullable=True),
+    sa.Column('earningsPerBasicShareUSD', sa.Float(), nullable=True),
+    sa.Column('shareholdersEquity', sa.BigInteger(), nullable=True),
+    sa.Column('averageEquity', sa.BigInteger(), nullable=True),
+    sa.Column('shareholdersEquityUSD', sa.BigInteger(), nullable=True),
+    sa.Column('enterpriseValue', sa.BigInteger(), nullable=True),
+    sa.Column('enterpriseValueOverEBIT', sa.BigInteger(), nullable=True),
+    sa.Column('enterpriseValueOverEBITDA', sa.Float(), nullable=True),
+    sa.Column('freeCashFlow', sa.BigInteger(), nullable=True),
+    sa.Column('freeCashFlowPerShare', sa.BigInteger(), nullable=True),
+    sa.Column('foreignCurrencyUSDExchangeRate', sa.BigInteger(), nullable=True),
+    sa.Column('grossProfit', sa.BigInteger(), nullable=True),
+    sa.Column('grossMargin', sa.Float(), nullable=True),
+    sa.Column('goodwillAndIntangibleAssets', sa.BigInteger(), nullable=True),
+    sa.Column('interestExpense', sa.BigInteger(), nullable=True),
+    sa.Column('investedCapital', sa.BigInteger(), nullable=True),
+    sa.Column('investedCapitalAverage', sa.BigInteger(), nullable=True),
+    sa.Column('inventory', sa.BigInteger(), nullable=True),
+    sa.Column('investments', sa.BigInteger(), nullable=True),
+    sa.Column('investmentsCurrent', sa.BigInteger(), nullable=True),
+    sa.Column('investmentsNonCurrent', sa.BigInteger(), nullable=True),
+    sa.Column('totalLiabilities', sa.BigInteger(), nullable=True),
+    sa.Column('currentLiabilities', sa.BigInteger(), nullable=True),
+    sa.Column('liabilitiesNonCurrent', sa.BigInteger(), nullable=True),
+    sa.Column('marketCapitalization', sa.BigInteger(), nullable=True),
+    sa.Column('netCashFlow', sa.BigInteger(), nullable=True),
+    sa.Column('netCashFlowBusinessAcquisitionsDisposals', sa.BigInteger(), nullable=True),
+    sa.Column('issuanceEquityShares', sa.BigInteger(), nullable=True),
+    sa.Column('issuanceDebtSecurities', sa.BigInteger(), nullable=True),
+    sa.Column('paymentDividendsOtherCashDistributions', sa.BigInteger(), nullable=True),
+    sa.Column('netCashFlowFromFinancing', sa.BigInteger(), nullable=True),
+    sa.Column('netCashFlowFromInvesting', sa.BigInteger(), nullable=True),
+    sa.Column('netCashFlowInvestmentAcquisitionsDisposals', sa.BigInteger(), nullable=True),
+    sa.Column('netCashFlowFromOperations', sa.BigInteger(), nullable=True),
+    sa.Column('effectOfExchangeRateChangesOnCash', sa.BigInteger(), nullable=True),
+    sa.Column('netIncome', sa.BigInteger(), nullable=True),
+    sa.Column('netIncomeCommonStock', sa.BigInteger(), nullable=True),
+    sa.Column('netIncomeCommonStockUSD', sa.BigInteger(), nullable=True),
+    sa.Column('netLossIncomeFromDiscontinuedOperations', sa.BigInteger(), nullable=True),
+    sa.Column('netIncomeToNonControllingInterests', sa.BigInteger(), nullable=True),
+    sa.Column('profitMargin', sa.BigInteger(), nullable=True),
+    sa.Column('operatingExpenses', sa.BigInteger(), nullable=True),
+    sa.Column('operatingIncome', sa.BigInteger(), nullable=True),
+    sa.Column('tradeAndNonTradePayables', sa.BigInteger(), nullable=True),
+    sa.Column('payoutRatio', sa.BigInteger(), nullable=True),
+    sa.Column('priceToBookValue', sa.Float(), nullable=True),
+    sa.Column('priceEarnings', sa.Float(), nullable=True),
+    sa.Column('priceToEarningsRatio', sa.Float(), nullable=True),
+    sa.Column('propertyPlantEquipmentNet', sa.BigInteger(), nullable=True),
+    sa.Column('preferredDividendsIncomeStatementImpact', sa.BigInteger(), nullable=True),
+    sa.Column('sharePriceAdjustedClose', sa.Float(), nullable=True),
+    sa.Column('priceSales', sa.Float(), nullable=True),
+    sa.Column('priceToSalesRatio', sa.Float(), nullable=True),
+    sa.Column('tradeAndNonTradeReceivables', sa.BigInteger(), nullable=True),
+    sa.Column('accumulatedRetainedEarningsDeficit', sa.BigInteger(), nullable=True),
+    sa.Column('revenues', sa.BigInteger(), nullable=True),
+    sa.Column('revenuesUSD', sa.BigInteger(), nullable=True),
+    sa.Column('researchAndDevelopmentExpense', sa.BigInteger(), nullable=True),
+    sa.Column('returnOnAverageAssets', sa.BigInteger(), nullable=True),
+    sa.Column('returnOnAverageEquity', sa.BigInteger(), nullable=True),
+    sa.Column('returnOnInvestedCapital', sa.BigInteger(), nullable=True),
+    sa.Column('returnOnSales', sa.BigInteger(), nullable=True),
+    sa.Column('shareBasedCompensation', sa.BigInteger(), nullable=True),
+    sa.Column('sellingGeneralAndAdministrativeExpense', sa.BigInteger(), nullable=True),
+    sa.Column('shareFactor', sa.BigInteger(), nullable=True),
+    sa.Column('shares', sa.BigInteger(), nullable=True),
+    sa.Column('weightedAverageShares', sa.BigInteger(), nullable=True),
+    sa.Column('weightedAverageSharesDiluted', sa.BigInteger(), nullable=True),
+    sa.Column('salesPerShare', sa.Float(), nullable=True),
+    sa.Column('tangibleAssetValue', sa.BigInteger(), nullable=True),
+    sa.Column('taxAssets', sa.BigInteger(), nullable=True),
+    sa.Column('incomeTaxExpense', sa.BigInteger(), nullable=True),
+    sa.Column('taxLiabilities', sa.BigInteger(), nullable=True),
+    sa.Column('tangibleAssetsBookValuePerShare', sa.Float(), nullable=True),
+    sa.Column('workingCapital', sa.BigInteger(), nullable=True),
+    sa.Column('adjusted', sa.Boolean(), nullable=False),
+    sa.ForeignKeyConstraint(['company_id'], ['company.compositeFigi'], ),
+    sa.ForeignKeyConstraint(['symbol_id'], ['symbol.unique_id'], ),
+    sa.ForeignKeyConstraint(['vendor_id'], ['vendor.id'], ),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('vendor_id', 'company_id', 'period', 'calender_date', 'report_period', 'updated')
+    )
+    op.create_index(op.f('ix_financials_id'), 'financials', ['id'], unique=False)
     op.create_table('forex_prices_daily_Unadj',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('unique_id', sa.String(), nullable=True),
@@ -464,6 +567,25 @@ def upgrade():
     sa.UniqueConstraint('vendor_id', 'indices_id', 'datetime')
     )
     op.create_index(op.f('ix_indices_prices_hourly_id'), 'indices_prices_hourly', ['id'], unique=False)
+    op.create_table('indices_prices_min',
+    sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
+    sa.Column('unique_id', sa.String(), nullable=True),
+    sa.Column('vendor_id', sa.Integer(), nullable=True),
+    sa.Column('indices_id', sa.String(), nullable=True),
+    sa.Column('datetime', sa.TIMESTAMP(), nullable=False),
+    sa.Column('open', sa.Float(), nullable=False),
+    sa.Column('high', sa.Float(), nullable=False),
+    sa.Column('low', sa.Float(), nullable=False),
+    sa.Column('close', sa.Float(), nullable=False),
+    sa.Column('volume', sa.BigInteger(), nullable=False),
+    sa.Column('vw_avg_price', sa.Float(), nullable=True),
+    sa.ForeignKeyConstraint(['indices_id'], ['indices.ticker'], ),
+    sa.ForeignKeyConstraint(['unique_id'], ['symbol.unique_id'], ),
+    sa.ForeignKeyConstraint(['vendor_id'], ['vendor.id'], ),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('vendor_id', 'indices_id', 'datetime')
+    )
+    op.create_index(op.f('ix_indices_prices_min_id'), 'indices_prices_min', ['id'], unique=False)
     op.create_table('quotes',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('vendor_id', sa.Integer(), nullable=True),
@@ -683,6 +805,8 @@ def downgrade():
     op.drop_table('stock_dividents')
     op.drop_index(op.f('ix_quotes_id'), table_name='quotes')
     op.drop_table('quotes')
+    op.drop_index(op.f('ix_indices_prices_min_id'), table_name='indices_prices_min')
+    op.drop_table('indices_prices_min')
     op.drop_index(op.f('ix_indices_prices_hourly_id'), table_name='indices_prices_hourly')
     op.drop_table('indices_prices_hourly')
     op.drop_index(op.f('ix_indices_prices_daily_id'), table_name='indices_prices_daily')
@@ -699,12 +823,12 @@ def downgrade():
     op.drop_table('forex_prices_daily_adj')
     op.drop_index(op.f('ix_forex_prices_daily_Unadj_id'), table_name='forex_prices_daily_Unadj')
     op.drop_table('forex_prices_daily_Unadj')
+    op.drop_index(op.f('ix_financials_id'), table_name='financials')
+    op.drop_table('financials')
     op.drop_index(op.f('ix_crypto_prices_min_unadj_id'), table_name='crypto_prices_min_unadj')
     op.drop_table('crypto_prices_min_unadj')
     op.drop_index(op.f('ix_crypto_prices_min_adj_id'), table_name='crypto_prices_min_adj')
     op.drop_table('crypto_prices_min_adj')
-    op.drop_index(op.f('ix_crypto_prices_min_id'), table_name='crypto_prices_min')
-    op.drop_table('crypto_prices_min')
     op.drop_index(op.f('ix_crypto_prices_hourly_unadj_id'), table_name='crypto_prices_hourly_unadj')
     op.drop_table('crypto_prices_hourly_unadj')
     op.drop_index(op.f('ix_crypto_prices_hourly_adj_id'), table_name='crypto_prices_hourly_adj')

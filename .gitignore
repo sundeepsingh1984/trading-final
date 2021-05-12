@@ -3,3 +3,5 @@
 __pycache__/
 # Environment files
 .env
+
+/app/assets/

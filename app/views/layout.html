@@ -1,0 +1,86 @@
+<html>
+<head>
+
+    <title>Stocks</title>
+
+    <link rel="stylesheet" href="{{url_for('static',path='/css/semantic.min.css')}}" >
+    <script src="{{url_for('static',path='/jQuery-3.3.1/jquery-3.3.1.min')}}"></script>
+    <script src="{{url_for('static',path='/js/semantic.min.js')}}"></script>
+    <link rel="stylesheet" type="text/css" href="{{url_for('static',path='/css/datatables.min.css')}}">
+    <script type="text/javascript" src="{{url_for('static',path='/js/datatables.min.js')}}"></script>
+
+
+
+</head>
+
+    <body>
+        
+
+        <div class="ui secondary pointing menu">
+          <a href="/"
+             class="active item">
+            Symbols
+          </a>
+
+          <div class="ui simple dropdown">
+            <a href="/" class="item" >
+               Dash  <i class="dropdown icon"></i> </a>
+
+                <div class="menu" >
+                  <a href="/" class="item"> Time Series </a>
+                  <a href="/streamlit" class="item"> Streamlit Dashboard </a>
+                  <a href="/reddit" class="item"> Reddit </a>
+                  <a href="/reddit_plot" class="item"> Reddit Plot </a>
+                </div>
+
+
+          </div>
+
+          <a href="/orders" class="item">
+            Order History
+          </a>
+          <a href="/fundamentals" class="item">
+            simFin
+          </a>
+
+          <div class="right menu">
+            <a class="ui item">
+              AI for Trading
+            </a>
+          </div>
+
+        </div>
+
+        <div class="ui container">
+
+        {% block content %}
+
+        {% endblock %}
+
+        </div>
+
+
+
+    </body>
+    <script type="text/javascript">
+      $(document).ready(function() {
+
+
+
+        $(document).ready(function() {
+          $('#dtab').DataTable( {
+        "paging":   false,
+        
+         } );} );
+
+        
+
+       
+
+
+
+
+
+      });
+
+    </script>

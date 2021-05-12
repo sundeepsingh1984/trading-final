@@ -15,21 +15,16 @@ sys.path.append(str(pathlib.Path(__file__).resolve().parents[2]))
 
 -------------------------------------------------------------------------------------------------------------------------------------
 
-
 """
-
-
 config = Config(".env")
 PROJECT_NAME = "Trading-app"
 VERSION = "1.0.0"
 API_PREFIX = "/api"
 SECRET_KEY = config("SECRET_KEY", cast=Secret, default="CHANGEME")
-
 ROOT_DIR="/app/"
-
-ASSET_DIR=config("ASSET_DIR", cast=str, default=ROOT_DIR+"assets/")
-
-
+ASSET_DIR=config("ASSET_DIR", cast=str, default=str(pathlib.Path(__file__).resolve().parents[2])+ROOT_DIR+"assets/")
+sys.path.append(str(pathlib.Path(__file__).resolve().parents[2])+ROOT_DIR)
+sys.path.append(str(pathlib.Path(__file__).resolve().parents[2])+ASSET_DIR)
 """
 ----------------------------------------------------------------------------------------------------------------------------
 
@@ -37,11 +32,9 @@ ASSET_DIR=config("ASSET_DIR", cast=str, default=ROOT_DIR+"assets/")
 
 ---------------------------------------------------------------------------------------------------------------------------------
 """
-
-
-POSTGRES_USER = config("POSTGRES_USER", cast=str)
-POSTGRES_PASSWORD = config("POSTGRES_PASSWORD", cast=Secret)
-POSTGRES_SERVER = config("POSTGRES_SERVER", cast=str, default="db")
+POSTGRES_USER = config("POSTGRES_USER", cast=str,default="postgres")
+POSTGRES_PASSWORD = config("POSTGRES_PASSWORD", cast=Secret,default="Sunny@123")
+POSTGRES_SERVER = config("POSTGRES_SERVER", cast=str, default="localhost")
 POSTGRES_PORT = config("POSTGRES_PORT", cast=str, default="5432")
 POSTGRES_DB = config("POSTGRES_DB", cast=str, default="tradingnew")
 DATABASE_URL_ASYNC = config(
@@ -58,14 +51,9 @@ DATABASE_URL = config(
 
 """
 --------------------------------------------------------------------------------------------------------------------------------------------------
-
                                                        OPENFIGI CONFIG DETAILS
-
 --------------------------------------------------------------------------------------------------------------------------------------------------
 
 """
-
-
-OPENFIGI_URL = config("OPEN_FIGI_URL", cast=str)
-
-OPENFIGI_KEY = config("OPEN_FIGI_KEY", cast=str)
+OPENFIGI_URL = config("OPEN_FIGI_URL", cast=str,default="")
+OPENFIGI_KEY = config("OPEN_FIGI_KEY", cast=str,default="")

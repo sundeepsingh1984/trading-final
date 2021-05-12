@@ -1,0 +1,91 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h1> **** </h1>
+
+    <form class="ui form small" method="get">
+
+        <select class="ui inline dropdown" style="width: 110; height: 32.5" name="table_filter" onchange="if (this.value) window.location.href=this.value">
+            
+             <option {% if data_type == "stock" %}  selected="selected", {% endif %}  value="stock" > Stock </option>
+             <option {% if data_type == "company" %}  selected="selected", {% endif %} value="companies" >Company</option>
+             <option  {% if data_type == "forex" %}  selected="selected", {% endif %}  value="forex" >Forex</option> 
+             <option  {% if data_type == "crypto" %}  selected="selected", {% endif %} value="crypto" >Crypto</option>
+             <option  {% if data_type == "indices" %}  selected="selected", {% endif %} value="indices">Indices</option>                         
+         </select>
+
+       
+                <div class="ui horizontal label" style="float: right;"> # Tickers: {{count}}</div>
+
+
+        </form>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <table class="ui teal table" id="dtab">
+    <thead>
+        <tr>
+          <th>Ticker</th>
+          <th>Name</th>
+          
+        </tr>
+    </thead>
+
+    <tbody>
+
+      {% for symbol in symbols %}
+      <tr>
+
+            <td><a href="stockprices/{{symbol.ticker}}"> {{symbol.ticker}}</a></td>
+            <td>{{symbol.name}}</td>
+      </tr>
+      {% endfor %}
+
+
+
+
+
+    </tbody>
+
+
+
+    <tfoot>
+    <tr><th colspan="12">
+      
+    </th>
+  </tr></tfoot>
+
+    </table>
+
+
+
+
+{% endblock %}
+
+
+
+</html>
+

@@ -1,3 +1,9 @@
+import sys,os,pathlib
+
+# we're appending the app directory to our path here so that we can import config easily
+sys.path.append(str(pathlib.Path(__file__).resolve().parents[2]))
+
+
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, Date,DateTime,UniqueConstraint, ForeignKey, Sequence, Text, Boolean, Float, Enum, BigInteger,TIMESTAMP
 
@@ -13,11 +19,13 @@ import enum
 import app.core.config as config
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from dictalchemy import DictableModel,make_class_dictable
 
 
 
 Base = declarative_base()
 
+make_class_dictable(Base)
 
 
 
@@ -228,20 +236,23 @@ class Company(Base):
 
     #relations
 
-    splits=relationship("StockSplits",backref="company")
-    dividents=relationship("StockDividents",backref="company")
+    splits=relationship("StockSplits",backref="company",order_by='desc(StockSplits.exDate)', lazy='dynamic')
+    dividents=relationship("StockDividents",backref="company",order_by='desc(StockDividents.exDate)', lazy='dynamic')
 
-    price_daily_adjusted=relationship("StockPricesDailyAdj",backref="company")
-    price_daily_unadjusted=relationship("StockPricesDailyUnadj",backref="company")
+    price_daily_adjusted=relationship("StockPricesDailyAdj",backref="company",order_by='desc(StockPricesDailyAdj.datetime)', lazy='dynamic')
+    price_daily_unadjusted=relationship("StockPricesDailyUnadj",backref="company",order_by='desc(StockPricesDailyUnadj.datetime)', lazy='dynamic')
 
-    prices_hourly_adjusted=relationship("StockPricesHourlyAdj",backref="company")
-    prices_hourly_unadjusted=relationship("StockPricesHourlyUnadj",backref="company")
+    prices_hourly_adjusted=relationship("StockPricesHourlyAdj",backref="company",order_by='desc(StockPricesHourlyAdj.datetime)', lazy='dynamic')
+    prices_hourly_unadjusted=relationship("StockPricesHourlyUnadj",backref="company",order_by='desc(StockPricesHourlyUnadj.datetime)', lazy='dynamic')
 
-    prices_min_adjusted=relationship("StockPricesMinuteAdj",backref="company")
-    prices_min_unadjusted=relationship("StockPricesMinUnadj",backref="company")
+    prices_min_adjusted=relationship("StockPricesMinuteAdj",backref="company",order_by='desc(StockPricesMinuteAdj.datetime)', lazy='dynamic')
+    prices_min_unadjusted=relationship("StockPricesMinUnadj",backref="company",order_by='desc(StockPricesMinUnadj.datetime)', lazy='dynamic')
 
-    quotes=relationship("Quotes",backref="company")
-    trades=relationship("Trades",backref="company")
+    quotes=relationship("Quotes",backref="company",order_by='desc(Quotes.sip_timestamp)', lazy='dynamic')
+    trades=relationship("Trades",backref="company",order_by='desc(Trades.sip_timestamp)', lazy='dynamic')
+
+
+    financials=relationship("Financials",backref="company",order_by='desc(Financials.calender_date)', lazy='dynamic')
 
 
 class Forex(Base):
@@ -251,7 +262,14 @@ class Forex(Base):
 
     #primary key
 
+
+
+
+
+
     ticker = Column("ticker",String, ForeignKey('symbol.unique_id',onupdate='CASCADE',ondelete='CASCADE'), primary_key=True)
+    vendor_id=Column(Integer,ForeignKey("vendor.id"))
+
 
     #columns
 
@@ -262,14 +280,14 @@ class Forex(Base):
     base = Column("base", String)
 
     #relations
-    price_daily_adjusted=relationship("ForexPricesDailyAdj",backref="forex")
-    price_daily_unadjusted=relationship("ForexPricesDailyUnadj",backref="forex")
+    price_daily_adjusted=relationship("ForexPricesDailyAdj",backref="forex",order_by='desc(ForexPricesDailyAdj.datetime)', lazy='dynamic')
+    price_daily_unadjusted=relationship("ForexPricesDailyUnadj",backref="forex",order_by='desc(ForexPricesDailyUnadj.datetime)', lazy='dynamic')
 
-    prices_hourly_adjusted=relationship("ForexPricesHourlyAdj",backref="forex")
-    prices_hourly_unadjusted=relationship("ForexPricesHourlyUnadj",backref="forex")
+    prices_hourly_adjusted=relationship("ForexPricesHourlyAdj",backref="forex",order_by='desc(ForexPricesHourlyAdj.datetime)', lazy='dynamic')
+    prices_hourly_unadjusted=relationship("ForexPricesHourlyUnadj",backref="forex",order_by='desc(ForexPricesHourlyUnadj.datetime)', lazy='dynamic')
 
-    prices_min_adjusted=relationship("ForexPricesMinAdj",backref="forex")
-    prices_min_unadjusted=relationship("ForexPricesMinUnadj",backref="forex")
+    prices_min_adjusted=relationship("ForexPricesMinAdj",backref="forex",order_by='desc(ForexPricesMinAdj.datetime)', lazy='dynamic')
+    prices_min_unadjusted=relationship("ForexPricesMinUnadj",backref="forex",order_by='desc(ForexPricesMinUnadj.datetime)', lazy='dynamic')
 
 
 
@@ -321,8 +339,6 @@ class ForexPricesMinAdj(Base):
 
 
 
-
-
 class Indices(Base):
 
     #table name
@@ -331,7 +347,7 @@ class Indices(Base):
     #primary key
 
     ticker = Column("ticker",String, ForeignKey('symbol.unique_id',onupdate='CASCADE',ondelete='CASCADE'), primary_key=True)
-
+    vendor_id=Column(Integer,ForeignKey("vendor.id"))
     #columns
 
     name =Column("name",String)
@@ -346,11 +362,11 @@ class Indices(Base):
 
     #relations
 
-    price_daily=relationship("IndicesPriceDaily",backref="indices")
+    price_daily=relationship("IndicesPriceDaily",backref="indices",order_by='desc(IndicesPriceDaily.datetime)', lazy='dynamic')
 
-    prices_hourly=relationship("IndicesPriceHourly",backref="indices")
+    prices_hourly=relationship("IndicesPriceHourly",backref="indices",order_by='desc(IndicesPriceHourly.datetime)', lazy='dynamic')
 
-    prices_min=relationship("IndicesPriceMin",backref="indices")
+    prices_min=relationship("IndicesPriceMin",backref="indices",order_by='desc(IndicesPriceMin.datetime)', lazy='dynamic')
 
 
 
@@ -368,7 +384,7 @@ class Crypto(Base):
     #primary key
 
     ticker = Column("ticker",String, ForeignKey('symbol.unique_id',onupdate='CASCADE',ondelete='CASCADE'), primary_key=True)
-
+    vendor_id=Column(Integer,ForeignKey("vendor.id"))
     #columns
 
     name =Column("name",String)
@@ -380,14 +396,14 @@ class Crypto(Base):
 
     #relations
 
-    price_daily_adjusted=relationship("CryptoPricesDailyAdj",backref="crypto")
-    price_daily_unadjusted=relationship("CryptoPricesDailyUnadj",backref="crypto")
+    price_daily_adjusted=relationship("CryptoPricesDailyAdj",backref="crypto",order_by='desc(CryptoPricesDailyAdj.datetime)', lazy='dynamic')
+    price_daily_unadjusted=relationship("CryptoPricesDailyUnadj",backref="crypto",order_by='desc(CryptoPricesDailyUnadj.datetime)', lazy='dynamic')
 
-    prices_hourly_adjusted=relationship("CryptoPricesHourlyAdj",backref="crypto")
-    prices_hourly_unadjusted=relationship("CryptoPricesHourlyUnadj",backref="crypto")
+    prices_hourly_adjusted=relationship("CryptoPricesHourlyAdj",backref="crypto",order_by='desc(CryptoPricesHourlyAdj.datetime)', lazy='dynamic')
+    prices_hourly_unadjusted=relationship("CryptoPricesHourlyUnadj",backref="crypto",order_by='desc(CryptoPricesHourlyUnadj.datetime)', lazy='dynamic')
 
-    prices_min_adjusted=relationship("CryptoPricesMinAdj",backref="crypto")
-    prices_min_unadjusted=relationship("CryptoPricesMinUnadj",backref="crypto")
+    prices_min_adjusted=relationship("CryptoPricesMinAdj",backref="crypto",order_by='desc(CryptoPricesMinAdj.datetime)', lazy='dynamic')
+    prices_min_unadjusted=relationship("CryptoPricesMinUnadj",backref="crypto",order_by='desc(CryptoPricesMinUnadj.datetime)', lazy='dynamic')
 
 
 
@@ -709,11 +725,11 @@ class StockSplits(Base):
 
 
     ticker=Column(String,nullable=False)
-    exDate=Column(DateTime,nullable=True)
-    paymentDate=Column(DateTime,nullable=True)
-    declaredDate=Column(DateTime,nullable=True)
-    ratio=Column(Float,nullable=False)
-    tofactor=Column(Integer,nullable=False)
+    exDate=Column(String,nullable=True)
+    paymentDate=Column(String,nullable=True)
+    declaredDate=Column(String,nullable=True)
+    ratio=Column(Float,nullable=True)
+    tofactor=Column(Integer,nullable=True)
 
 
 
@@ -743,9 +759,9 @@ class StockDividents(Base):
 
 
     ticker=Column(String,nullable=False)
-    exDate=Column(DateTime,nullable=True)
-    paymentDate=Column(DateTime,nullable=True)
-    recordDate=Column(DateTime,nullable=True)
+    exDate=Column(String,nullable=True)
+    paymentDate=Column(String,nullable=True)
+    recordDate=Column(String,nullable=True)
     amount=Column(Float,nullable=False)
 
 
@@ -876,16 +892,18 @@ class News(Base):
     # company_id=Column(ARRAY(String),ForeignKey("company.compositeFigi"))
     # symbol_id=Column(ARRAY(String),ForeignKey("symbol.unique_id"))
 
+
+
     #columns
 
-    datetime=Column(DateTime,nullable=False)
-    symbols=Column(ARRAY(Integer),nullable=False)
-    title=Column(String,nullable=False)
-    url=Column(String,nullable=False)
-    source=Column(String,nullable=False)
-    summary=Column(String,nullable=False)
-    image=Column(String,nullable=False)
-    keywords=Column(ARRAY(String),nullable=False)
+    datetime=Column(String,nullable=True)
+    symbols=Column(ARRAY(String),nullable=True)
+    title=Column(String,nullable=True)
+    url=Column(String,nullable=True)
+    source=Column(String,nullable=True)
+    summary=Column(String,nullable=True)
+    image=Column(String,nullable=True)
+    keywords=Column(ARRAY(String),nullable=True)
 
 
 
@@ -1504,7 +1522,7 @@ class IndicesPriceMin(Base):
 
     #table name
 
-    __tablename__="crypto_prices_min"
+    __tablename__="indices_prices_min"
 
 
     #tableAttr
@@ -1537,6 +1555,190 @@ class IndicesPriceMin(Base):
     close=Column(Float,nullable=False)
     volume=Column(BigInteger,nullable=False)
     vw_avg_price=Column(Float,nullable=True)
+
+
+
+
+
+    class Financials(Base):
+        __tablename__="financials"
+
+
+        #tableAttr
+
+        __table_args__ = tuple([UniqueConstraint('vendor_id', 'company_id', "period","calender_date","report_period","updated")])
+
+
+
+
+
+        #primary key
+
+        id=Column(Integer,index=True,primary_key=True,autoincrement=True)
+
+
+        #foreign keys
+
+        vendor_id=Column(Integer,ForeignKey("vendor.id"))
+        company_id=Column(String,ForeignKey("company.compositeFigi"))
+        symbol_id=Column(String,ForeignKey("symbol.unique_id"))
+        
+
+        #columns
+
+
+        period=Column(TIMESTAMP,nullable=False)
+        calender_date=Column(Date,nullable=False)
+        report_period=Column(Date,nullable=False)
+        updated=Column(Date)
+        accumulatedOtherComprehensiveIncome=Column(BigInteger,nullable=False)
+        assets=Column(BigInteger,nullable=False)
+        assetsAverage=Column(BigInteger,nullable=True)
+        assetsCurrent=Column(BigInteger,nullable=True)
+        assetTurnover=Column(BigInteger,nullable=True)
+        assetsNonCurrent=Column(BigInteger,nullable=True)
+        assetsCurrent=Column(BigInteger,nullable=True)
+        
+        bookValuePerShare=Column(Float,nullable=True)
+
+
+        capitalExpenditure=Column(BigInteger,nullable=True)
+        cashAndEquivalents=Column(BigInteger,nullable=True)
+        cashAndEquivalentsUSD=Column(BigInteger,nullable=True)
+        costOfRevenue=Column(BigInteger,nullable=True)
+        consolidatedIncome=Column(BigInteger,nullable=True)
+        currentRatio=Column(Float,nullable=True)
+        
+
+        debtToEquityRatio=Column(Float,nullable=True)
+        debt=Column(BigInteger,nullable=True)
+        debtCurrent=Column(BigInteger,nullable=True)
+        debtNonCurrent=Column(BigInteger,nullable=True)
+        debtUSD=Column(BigInteger,nullable=True)
+        deferredRevenue=Column(BigInteger,nullable=True)
+        depreciationAmortizationAndAccretion=Column(BigInteger,nullable=True)
+        deposits=Column(BigInteger,nullable=True)
+        dividendYield=Column(BigInteger,nullable=True)
+        dividendsPerBasicCommonShare=Column(BigInteger,nullable=True)
+        
+
+
+
+        earningBeforeInterestTaxes=Column(BigInteger,nullable=True)
+        earningsBeforeInterestTaxesDepreciationAmortization=Column(BigInteger,nullable=True)
+        EBITDAMargin=Column(BigInteger,nullable=True)
+        earningsBeforeInterestTaxesDepreciationAmortizationUSD=Column(BigInteger,nullable=True)
+        earningBeforeInterestTaxesUSD=Column(Float,nullable=True)
+        
+
+
+        earningsBeforeTax=Column(BigInteger,nullable=True)
+        cashAndEquivalents=Column(BigInteger,nullable=True)
+        cashAndEquivalentsUSD=Column(BigInteger,nullable=True)
+        costOfRevenue=Column(BigInteger,nullable=True)
+        consolidatedIncome=Column(BigInteger,nullable=True)
+        currentRatio=Column(Float,nullable=True)
+        debtToEquityRatio=Column(Float,nullable=True)
+        
+        
+        debt=Column(BigInteger,nullable=True)
+        debtCurrent=Column(BigInteger,nullable=True)
+        debtNonCurrent=Column(BigInteger,nullable=True)
+        debtUSD=Column(BigInteger,nullable=True)
+        deferredRevenue=Column(BigInteger,nullable=True)
+        depreciationAmortizationAndAccretion=Column(BigInteger,nullable=True)
+        deposits=Column(BigInteger,nullable=True)
+        dividendYield=Column(BigInteger,nullable=True)
+        dividendsPerBasicCommonShare=Column(BigInteger,nullable=True)
+        earningBeforeInterestTaxes=Column(BigInteger,nullable=True)
+        earningsBeforeInterestTaxesDepreciationAmortization=Column(BigInteger,nullable=True)
+        EBITDAMargin=Column(BigInteger,nullable=True)
+        earningsBeforeInterestTaxesDepreciationAmortizationUSD=Column(BigInteger,nullable=True)
+        earningBeforeInterestTaxesUSD=Column(BigInteger,nullable=True)
+        earningsBeforeTax=Column(BigInteger,nullable=True)
+        earningsPerBasicShare=Column(Float,nullable=True)
+        earningsPerDilutedShare=Column(Float,nullable=True)
+        earningsPerBasicShareUSD=Column(Float,nullable=True)
+        shareholdersEquity=Column(BigInteger,nullable=True)
+        averageEquity=Column(BigInteger,nullable=True)
+        shareholdersEquityUSD=Column(BigInteger,nullable=True)
+        enterpriseValue=Column(BigInteger,nullable=True)
+        enterpriseValueOverEBIT=Column(BigInteger,nullable=True)
+        enterpriseValueOverEBITDA=Column(Float,nullable=True)
+        freeCashFlow=Column(BigInteger,nullable=True)
+        freeCashFlowPerShare=Column(BigInteger,nullable=True)
+        foreignCurrencyUSDExchangeRate=Column(BigInteger,nullable=True)
+        grossProfit=Column(BigInteger,nullable=True)
+        grossMargin=Column(Float,nullable=True)
+        goodwillAndIntangibleAssets=Column(BigInteger,nullable=True)
+        interestExpense=Column(BigInteger,nullable=True)
+        investedCapital=Column(BigInteger,nullable=True)
+        investedCapitalAverage=Column(BigInteger,nullable=True)
+        inventory=Column(BigInteger,nullable=True)
+        investments=Column(BigInteger,nullable=True)
+        investmentsCurrent=Column(BigInteger,nullable=True)
+        investmentsNonCurrent=Column(BigInteger,nullable=True)
+        totalLiabilities=Column(BigInteger,nullable=True)
+        currentLiabilities=Column(BigInteger,nullable=True)
+        liabilitiesNonCurrent=Column(BigInteger,nullable=True)
+        marketCapitalization=Column(BigInteger,nullable=True)
+        netCashFlow=Column(BigInteger,nullable=True)
+        netCashFlowBusinessAcquisitionsDisposals=Column(BigInteger,nullable=True)
+        issuanceEquityShares=Column(BigInteger,nullable=True)
+        issuanceDebtSecurities=Column(BigInteger,nullable=True)
+        paymentDividendsOtherCashDistributions=Column(BigInteger,nullable=True)
+        netCashFlowFromFinancing=Column(BigInteger,nullable=True)
+        netCashFlowFromInvesting=Column(BigInteger,nullable=True)
+        netCashFlowInvestmentAcquisitionsDisposals=Column(BigInteger,nullable=True)
+        netCashFlowFromOperations=Column(BigInteger,nullable=True)
+        effectOfExchangeRateChangesOnCash=Column(BigInteger,nullable=True)
+        netIncome=Column(BigInteger,nullable=True)
+        netIncomeCommonStock=Column(BigInteger,nullable=True)
+        netIncomeCommonStockUSD=Column(BigInteger,nullable=True)
+        netLossIncomeFromDiscontinuedOperations=Column(BigInteger,nullable=True)
+        netIncomeToNonControllingInterests=Column(BigInteger,nullable=True)
+        profitMargin=Column(BigInteger,nullable=True)
+        operatingExpenses=Column(BigInteger,nullable=True)
+        operatingIncome=Column(BigInteger,nullable=True)
+        tradeAndNonTradePayables=Column(BigInteger,nullable=True)
+        payoutRatio=Column(BigInteger,nullable=True)
+        priceToBookValue=Column(Float,nullable=True)
+        priceEarnings=Column(Float,nullable=True)
+        priceToEarningsRatio=Column(Float,nullable=True)
+        propertyPlantEquipmentNet=Column(BigInteger,nullable=True)
+        preferredDividendsIncomeStatementImpact=Column(BigInteger,nullable=True)
+        sharePriceAdjustedClose=Column(Float,nullable=True)
+        priceSales=Column(Float,nullable=True)
+        priceToSalesRatio=Column(Float,nullable=True)
+        tradeAndNonTradeReceivables=Column(BigInteger,nullable=True)
+        accumulatedRetainedEarningsDeficit=Column(BigInteger,nullable=True)
+        revenues=Column(BigInteger,nullable=True)
+        revenuesUSD=Column(BigInteger,nullable=True)
+        researchAndDevelopmentExpense=Column(BigInteger,nullable=True)
+        returnOnAverageAssets=Column(BigInteger,nullable=True)
+        returnOnAverageEquity=Column(BigInteger,nullable=True)
+        returnOnInvestedCapital=Column(BigInteger,nullable=True)
+        returnOnSales=Column(BigInteger,nullable=True)
+        shareBasedCompensation=Column(BigInteger,nullable=True)
+        sellingGeneralAndAdministrativeExpense=Column(BigInteger,nullable=True)
+        shareFactor=Column(BigInteger,nullable=True)
+        shares=Column(BigInteger,nullable=True)
+        weightedAverageShares=Column(BigInteger,nullable=True)
+        weightedAverageSharesDiluted=Column(BigInteger,nullable=True)
+        salesPerShare=Column(Float,nullable=True)
+        tangibleAssetValue=Column(BigInteger,nullable=True)
+        taxAssets=Column(BigInteger,nullable=True)
+        incomeTaxExpense=Column(BigInteger,nullable=True)
+        taxLiabilities=Column(BigInteger,nullable=True)
+        tangibleAssetsBookValuePerShare=Column(Float,nullable=True)
+        workingCapital=Column(BigInteger,nullable=True)
+        adjusted=Column(Boolean,nullable=False)
+
+
+
+
+
+
 
 
 
