@@ -16,7 +16,7 @@ class StockPriceController:
 
     
     
-    async def query_data(self,r_obj,relation,parameter_val=None,start=None,end=None,limit=50000,parameter="ticker"):
+    async def query_data(self,r_obj,relation,parameter_val=None,start=None,end=None,limit=10000,parameter="ticker"):
         session=self.sync_session()
         q_res=session.query(Company).filter( getattr(Company,parameter) ==  parameter_val).one()
 

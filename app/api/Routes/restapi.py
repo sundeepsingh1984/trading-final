@@ -30,11 +30,11 @@ router=APIRouter()
 @router.get("/tickers")
 
 
-async def symbols(request:Request):
+async def symbols(request:Request,market:Optional[str]=None):
 
     sym_obj=SymbolController()
     
-    symbols=await sym_obj.get_tickers()
+    symbols=await sym_obj.get_tickers("market",market)
 
     sym_json = jsonable_encoder(symbols)
     return JSONResponse(content=sym_json)
